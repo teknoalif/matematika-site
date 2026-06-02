@@ -1,0 +1,22 @@
+baseURL = 'https://matematikaituasyik.kakalif.my.id/'
+languageCode = 'id-id'
+title = 'Matematika Itu Asyik'
+theme = 'PaperMod'
+
+[params]
+    defaultTheme = "light"
+    showToc = true
+
+[params.homeInfoParams]
+    Title = "Selamat Datang di Matematika Itu Asyik! 📐"
+    Content = "Tempat belajar matematika, download bank soal, dan pembahasan ujian terlengkap."
+
+# 1. Mengizinkan Shortcode HTML merender tombol download
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+# 2. Mengaktifkan Fitur Matematika bawaan PaperMod
+[params.analytics]
+    # Kita manfaatkan custom script head bawaan tema untuk inject KaTeX otomatis
