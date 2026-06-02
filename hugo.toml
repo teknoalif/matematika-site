@@ -1,22 +1,66 @@
 baseURL = 'https://matematikaituasyik.kakalif.my.id/'
-languageCode = 'id-id'
+locale = 'id-id'
 title = 'Matematika Itu Asyik'
 theme = 'PaperMod'
 
 [params]
     defaultTheme = "light"
     showToc = true
+    favicon = "/favicon.png" # Mengarah ke static/favicon.png jika nanti dipasang
 
-[params.homeInfoParams]
-    Title = "Selamat Datang di Matematika Itu Asyik! 📐"
-    Content = "Tempat belajar matematika, download bank soal, dan pembahasan ujian terlengkap."
+[params.profileMode]
+    enabled = true
+    title = "ALIF REZKY, M.Pd."
+    subtitle = "Guru Matematika & Web Developer. Selamat belajar matematika dengan cara yang asyik!"
+    imageUrl = "https://github.com/teknoalif.png"
+    imageWidth = 120
+    imageHeight = 120
+    imageTitle = "Kak Alif"
 
-# 1. Mengizinkan Shortcode HTML merender tombol download
+    # Tombol 1: Promosi Buku Utama
+    [[params.profileMode.buttons]]
+        name = "📘 Dapatkan Buku \"Matematika Itu Asyik\""
+        url = "https://lynk.id/aalifrezky/8mo6krddwog1"
+
+    # Tombol 2: Akses Bank Soal & Materi
+    [[params.profileMode.buttons]]
+        name = "📚 Mulai Belajar"
+        url = "/posts/"
+
+    # Tombol 3: Link ke YouTube Channel Anda
+    [[params.profileMode.buttons]]
+        name = "📺 YouTube Kak Alif"
+        url = "https://youtube.com/@kakalifgurumatematika"
+
+    # Tombol 4: Link ke Website Utama (Next.js)
+    [[params.profileMode.buttons]]
+        name = "🌐 kakalif.my.id"
+        url = "https://kakalif.my.id"
+
+    # Tombol 5: Link ke Jamia
+    [[params.profileMode.buttons]]
+        name = "🚀 jamia.id"
+        url = "https://jamia.id"
+
+# --- MENU NAVIGASI ATAS ---
+[[menu.main]]
+    name = "Materi"
+    url = "/categories/materi/"
+    weight = 10
+
+[[menu.main]]
+    name = "Bank Soal"
+    url = "/categories/bank-soal/"
+    weight = 20
+
+[[menu.main]]
+    name = "Pembahasan"
+    url = "/categories/pembahasan/"
+    weight = 30
+
+# --- ENGINE MARKDOWN (RENDERER) ---
+# Mengizinkan Shortcode HTML merender tombol download & banner promo buku
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
-
-# 2. Mengaktifkan Fitur Matematika bawaan PaperMod
-[params.analytics]
-    # Kita manfaatkan custom script head bawaan tema untuk inject KaTeX otomatis
