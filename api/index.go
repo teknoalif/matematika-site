@@ -8,18 +8,9 @@ import (
 	"strings"
 )
 
-type OrderRequest struct {
-	PaketNama string `json:"paketNama"`
-	Amount    int64  `json:"amount"`
-	Email     string `json:"email"`
-}
-
-type OrderResponse struct {
-	SnapToken string `json:"snapToken"`
-}
-
 // Handler utama yang dieksekusi oleh Vercel Serverless Functions
 func Handler(w http.ResponseWriter, r *http.Request) {
+	// Aturan CORS standar agar web tetap fleksibel
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -57,7 +48,21 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 					/* HERO SECTION WIDE LAYOUT */
 					.hero { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); padding: 60px 40px; color: white; display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 20px auto; border-radius: 24px; text-align: left; }
 					.hero-content { max-width: 700px; }
-					.hero h1 { font-weight: 950; font-size: 3.2rem; margin: 0; letter-spacing: -2px; color: #FFFFFF; }
+					
+					/* 🌟 EFEK GRADASI EMAS-BIRU PADA NAMA SESUAI LOGO KAK ALIF 🌟 */
+					.hero h1 { 
+						font-weight: 950; 
+						font-size: 3.2rem; 
+						margin: 0; 
+						letter-spacing: -2px; 
+						background: linear-gradient(135deg, #E5BA73 0%%, #C5A059 40%%, #60A5FA 100%%); 
+						-webkit-background-clip: text; 
+						background-clip: text; 
+						-webkit-text-fill-color: transparent; 
+						text-fill-color: transparent;
+						filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+					}
+					
 					.hero p { font-size: 1.2rem; color: #93C5FD; font-weight: 600; margin: 10px 0 0 0; }
 					.hero-buttons { display: flex; gap: 12px; }
 					.hero-btn { display: inline-flex; align-items: center; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 800; padding: 14px 28px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); transition: 0.2s; }
