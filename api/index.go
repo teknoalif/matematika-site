@@ -55,7 +55,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 						font-size: 3.2rem; 
 						margin: 0; 
 						letter-spacing: -2px; 
-						background: linear-gradient(135deg, #E5BA73 0%%, #C5A059 40%%, #60A5FA 100%%); 
+						background: linear-gradient(135deg, #550000 0%%, #C5A059 40%%, #60A5FA 100%%); 
 						-webkit-background-clip: text; 
 						background-clip: text; 
 						-webkit-text-fill-color: transparent; 
