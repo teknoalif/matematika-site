@@ -57,7 +57,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
     letter-spacing: -2px; 
     
     /* 🔴 Ganti total dengan warna Merah Maroon Tegas di bawah ini 🔴 */
-    color: #8B0000; 
+    color: #0F172A; 
     
     /* 🔴 Bersihkan properti gradasi lama agar tidak tabrakan 🔴 */
     background: none;
