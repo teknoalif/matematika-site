@@ -51,17 +51,23 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 					
 					/* 🌟 EFEK GRADASI EMAS-BIRU PADA NAMA SESUAI LOGO KAK ALIF 🌟 */
 					.hero h1 { 
-						font-weight: 950; 
-						font-size: 3.2rem; 
-						margin: 0; 
-						letter-spacing: -2px; 
-						background: linear-gradient(135deg, #550000 0%%, #C5A059 40%%, #60A5FA 100%%); 
-						-webkit-background-clip: text; 
-						background-clip: text; 
-						-webkit-text-fill-color: transparent; 
-						text-fill-color: transparent;
-						filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-					}
+    font-weight: 950; 
+    font-size: 3.2rem; 
+    margin: 0; 
+    letter-spacing: -2px; 
+    
+    /* 🔴 Ganti total dengan warna Merah Maroon Tegas di bawah ini 🔴 */
+    color: #800000; 
+    
+    /* 🔴 Bersihkan properti gradasi lama agar tidak tabrakan 🔴 */
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    -webkit-text-fill-color: initial;
+    text-fill-color: initial;
+    
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+}
 					
 					.hero p { font-size: 1.2rem; color: #93C5FD; font-weight: 600; margin: 10px 0 0 0; }
 					.hero-buttons { display: flex; gap: 12px; }
