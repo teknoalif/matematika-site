@@ -1,13 +1,10 @@
-package main
+package handler
 
 import (
 	"bytes"         // Untuk mengolah data request sebelum dikirim ke internet
 	"encoding/json" // Untuk mengubah objek data menjadi format JSON (dan sebaliknya)
 	"fmt"           // Untuk menampilkan log teks di terminal server
-	"log"           // Untuk mencatat log jika terjadi masalah fatal pada server
 	"net/http"      // Core library utama Go untuk menjalankan HTTP Web Server
-	"os"            // Untuk mendeteksi Port otomatis dari server hosting cloud
-	"strings"       // Untuk manipulasi string jika diperlukan
 	"time"          // Untuk membuat stempel waktu unik pada Order ID
 )
 
@@ -93,12 +90,12 @@ func panggilMidtransAPI(req OrderRequest) (string, error) {
 	return token, nil
 }
 
-// Handler 1: Mengurus pembuatan transaksi otomatis Midtrans Snap
-func handleCheckout(w http.ResponseWriter, r *http.Request) {
+// Handler utama yang dieksekusi secara otomatis oleh Vercel Serverless
+func Handler(w http.ResponseWriter, r *http.Request) {
 	// Aturan CORS (Cross-Origin Resource Sharing) agar Next.js di Vercel bisa mengakses API ini
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 
 	// Jika mendeteksi preflight request dari browser, langsung setujui aman
 	if r.Method == "OPTIONS" {
@@ -106,67 +103,54 @@ func handleCheckout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Validasi wajib menggunakan metode POST
-	if r.Method != "POST" {
-		http.Error(w, "Metode HTTP wajib POST!", http.StatusMethodNotAllowed)
+	// ROUTING MANUAL 1: Jalur untuk transaksi otomatis Midtrans Snap
+	if r.URL.Path == "/api/v1/taawun/checkout" {
+		if r.Method != "POST" {
+			http.Error(w, "Metode HTTP wajib POST!", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req OrderRequest
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			http.Error(w, "Format JSON kiriman rusak", http.StatusBadRequest)
+			return
+		}
+
+		// Jalankan fungsi tembak API Midtrans
+		snapToken, err := panggilMidtransAPI(req)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Bungkus token ke format JSON dan kirim balik ke Next.js browser donatur
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(OrderResponse{SnapToken: snapToken})
 		return
 	}
 
-	var req OrderRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		http.Error(w, "Format JSON kiriman rusak", http.StatusBadRequest)
+	// ROUTING MANUAL 2: Menyajikan data portofolio & profil Kak Alif riil dari kakalif.jamia.id
+	if r.URL.Path == "/api/v1/profil" {
+		w.Header().Set("Content-Type", "application/json")
+
+		dataProfil := ProfilResponse{
+			Nama:     "Alif Rezky (Daeng Lewa / Abu Uwais)",
+			Gelar:    "M.Pd. (Magister Pendidikan Matematika - Universitas Negeri Makassar)",
+			Keahlian: []string{"Professional Mathematics Educator (OSN & UTBK)", "Web Developer (Next.js, React, Supabase, Go)", "Published Book Author"},
+			BukuPopuler: []string{
+				"Matematika Itu Asyik (100+ Eksemplar Tersebar)",
+				"Belajar Python dari Nol",
+				"TULIMATIKA (Modul Inklusif Bahasa Isyarat)",
+				"Langkah Kecil, Karya Besar",
+			},
+			KontakWA: "6285256162879",
+		}
+
+		json.NewEncoder(w).Encode(dataProfil)
 		return
 	}
 
-	// Jalankan fungsi tembak API Midtrans
-	snapToken, err := panggilMidtransAPI(req)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Bungkus token ke format JSON dan kirim balik ke Next.js browser donatur
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(OrderResponse{SnapToken: snapToken})
+	// Jika URL tidak cocok dengan endpoint di atas, beri respons 404
+	http.NotFound(w, r)
 }
-
-// Handler 2: Menyajikan data portofolio & profil Kak Alif riil dari kakalif.jamia.id
-func handleProfil(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-
-	dataProfil := ProfilResponse{
-		Nama:     "Alif Rezky (Daeng Lewa / Abu Uwais)",
-		Gelar:    "M.Pd. (Magister Pendidikan Matematika - Universitas Negeri Makassar)",
-		Keahlian: []string{"Professional Mathematics Educator (OSN & UTBK)", "Web Developer (Next.js, React, Supabase, Go)", "Published Book Author"},
-		BukuPopuler: []string{
-			"Matematika Itu Asyik (100+ Eksemplar Tersebar)",
-			"Belajar Python dari Nol",
-			"TULIMATIKA (Modul Inklusif Bahasa Isyarat)",
-			"Langkah Kecil, Karya Besar",
-		},
-		KontakWA: "6285256162879",
-	}
-
-	json.NewEncoder(w).Encode(dataProfil)
-}
-
-// Fungsi utama yang mengendalikan siklus hidup server
-func main() {
-	// Pendaftaran jalur URL Endpoint API Go
-	http.HandleFunc("/api/v1/taawun/checkout", handleCheckout)
-	http.HandleFunc("/api/v1/profil", handleProfil)
-
-	// Mengambil port dinamis dari lingkungan cloud hosting (seperti Render / Railway)
-	// Jika berjalan di laptop lokal, otomatis menggunakan fallback port 8080
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	fmt.Printf("Alhamdulillah, Server Backend Go sukses aktif di port :%s...\n", port)
-	
-	// Menyalakan server HTTP agar bersiap siaga melayani data secara non-stop
-	log.Fatal(http.ListenAndServe(":"+port, nil))
-} 
