@@ -103,6 +103,36 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 🚀 PENGONDISIAN BARU: Mengurus halaman utama domain bersih agar terhindar dari eror 404 Vercel
+	if r.URL.Path == "/" || r.URL.Path == "" {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		fmt.Fprintf(w, `
+			<!DOCTYPE html>
+			<html lang="id">
+			<head>
+				<meta charset="UTF-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				<title>Alif Rezky - Powered by Go</title>
+				<style>
+					body { font-family: sans-serif; background-color: #F0F9FF; color: #1e293b; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+					.card { background: white; padding: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); text-align: center; max-width: 400px; border-radius: 24px; }
+					h1 { color: #0ea5e9; font-size: 1.5rem; margin-bottom: 5px; }
+					p { font-size: 0.9rem; color: #64748b; line-height: 1.5; }
+					.badge { display: inline-block; background: #ECFDF5; color: #059669; padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; margin-top: 10px; }
+				</style>
+			</head>
+			<body>
+				<div class="card">
+					<h1>Bismillah, Go Engine is Live! 🚀</h1>
+					<p>Website <b>kakalif.my.id</b> sekarang resmi berjalan sepenuhnya di atas ekosistem bahasa pemrograman Go (Golang) via Vercel Serverless.</p>
+					<div class="badge">✓ API & Routing Aktif</div>
+				</div>
+			</body>
+			</html>
+		`)
+		return
+	}
+
 	// ROUTING MANUAL 1: Jalur untuk transaksi otomatis Midtrans Snap
 	if r.URL.Path == "/api/v1/taawun/checkout" {
 		if r.Method != "POST" {
