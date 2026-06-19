@@ -3,107 +3,78 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-
-	if r.Method == "OPTIONS" {
-		w.WriteHeader(http.StatusOK)
-		return
-	}
-
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	
 	p := r.URL.Path
-
-	// --- ROUTING HALAMAN UTAMA (DASHBOARD) ---
-	if p == "/" || p == "" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, dashboardHTML())
-		return
+	switch {
+	case p == "/" || p == "": fmt.Fprintf(w, dashboardHTML())
+	case p == "/buku": fmt.Fprintf(w, renderBuku())
+	case p == "/jasa/alalify-tech": fmt.Fprintf(w, renderJasa())
+	default: http.NotFound(w, r)
 	}
-
-	// --- ROUTING JASA ---
-	if p == "/jasa/alalify-tech" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		fmt.Fprintf(w, jasaPageHTML())
-		return
-	}
-
-	// --- ROUTING ARTIKEL MARKDOWN ---
-	if strings.HasPrefix(p, "/posts/") {
-		renderArtikel(w, p)
-		return
-	}
-
-	http.NotFound(w, r)
 }
 
 func dashboardHTML() string {
-	return `
-	<!DOCTYPE html>
-	<html lang="id">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Alif Rezky, M.Pd - Portofolio & Buku</title>
-		<style>
-			* { box-sizing: border-box; }
-			body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #F8FAFC; color: #1E293B; margin: 0; padding-bottom: 60px; }
-			.widget-bar { background: white; padding: 14px 40px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid #E2E8F0; }
-			.hero { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); padding: 60px 40px; color: white; display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 20px auto; border-radius: 24px; }
-			.hero h1 { font-weight: 950; font-size: 3.2rem; margin: 0; letter-spacing: -2px; color: #0EA5E9; }
-			.hero-btn { display: inline-flex; align-items: center; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 800; padding: 14px 28px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); transition: 0.2s; }
-			.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-			.card { background: white; padding: 35px; border-radius: 24px; border: 1px solid #E2E8F0; }
-		</style>
-	</head>
-	<body>
-		<div class="widget-bar">
-			<div>📅 Masehi: <span id="masehi-txt"></span></div>
-			<div>🌙 Hijriah: <span id="hijriah-txt"></span></div>
-			<div>🕒 Jam: <span id="jam-txt"></span></div>
-		</div>
+	return `<!DOCTYPE html><html lang="id" dir="ltr"><head><meta charset="UTF-8"><title>Alif Rezky, M.Pd</title>
+	<style>
+		body{font-family:system-ui, sans-serif; background:#F1F5F9; margin:0; padding-bottom:50px;}
+		.hero{background:#0F172A; padding:60px 20px; color:white; text-align:center;}
+		.main-wrapper{max-width:900px; margin:-40px auto 0; padding:0 20px;}
+		.card{background:white; padding:30px; border-radius:16px; margin-bottom:20px; box-shadow:0 4px 6px rgba(0,0,0,0.03);}
+		h2{color:#800000; font-weight:900; border-left:6px solid #800000; padding-left:15px;}
+		.btn-yt{background:#0EA5E9; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:800; display:inline-block; margin:5px;}
+	</style></head><body>
 		<div class="hero">
-			<div><h1>Alif Rezky, M.Pd</h1><p>Mathematics Educator | Tech Developer | Author</p></div>
-			<div>
-				<a href="https://youtube.com/@kakalifgurumatematika" target="_blank" class="hero-btn">YouTube Channel</a>
-				<a href="/jasa/alalify-tech" class="hero-btn" style="background:#0EA5E9;">Alalify Tech 🛠️</a>
+			<h1>Alif Rezky, M.Pd</h1>
+			<p>Mathematics Educator | Tech Developer | Author</p>
+			<a href="https://youtube.com/@kakalifgurumatematika" class="btn-yt">YouTube Channel 📺</a>
+		</div>
+		<div class="main-wrapper">
+			<div class="card">
+				<h2>Profil (ID / AR)</h2>
+				<p><b>ID:</b> Muslim & Fullstack Developer yang bertujuan memberikan edukasi tentang Islam, Matematika, dan Teknologi.</p>
+				<p dir="rtl" style="text-align:right;"><b>AR:</b> أنا مسلم ومطور برمجيات متكامل، وأسعى بإذن الله إلى تعليم المجتمع عن الإسلام والرياضيات والتكنولوجيا.</p>
+			</div>
+			<div class="card">
+				<h2>Riwayat Pengalaman / الخبرات</h2>
+				<ul>
+					<li><b>Math Tutor (Online)</b>, Algonova (Mar 2026-Sekarang / مارس ٢٠٢٦م - الآن)</li>
+					<li><b>Guru Matematika</b>, SMA IT Al Binaa (Sept 2022-Jun 2026 / سبتمبر ٢٠٢٢م - يونيو ٢٠٢٦م)</li>
+					<li><b>Master Teacher</b>, Brain Academy by Ruangguru (Okt-Des 2023 / أكتوبر - ديسمبر ٢٠٢٣م)</li>
+					<li><b>Asisten Dosen</b>, UNM (Okt 2018-Sept 2022 / أكتوبر ٢٠١٨م - سبتمبر ٢٠٢٢م)</li>
+				</ul>
+			</div>
+			<div class="card">
+				<h2>Bahasa & Skill</h2>
+				<p><b>Bahasa:</b> Indonesia, Inggris, Makassar, Bisindo | العربية (مستوى أساسي)</p>
+				<p><b>Teknologi:</b> Python, JS, CSS, PHP, ActionScript 2.0</p>
+			</div>
+			<div class="card">
+				<h2>Video Pembelajaran</h2>
+				<div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+					<iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:12px;" src="https://www.youtube.com/embed/_3pqgVhtDBg"></iframe>
+				</div>
 			</div>
 		</div>
-		<div class="container">
-			<div class="card"><h2>Profil & Keahlian</h2><p>Pendidik matematika UNM, expert GNU/Linux & Web Dev.</p></div>
-			<div class="card"><h2>Pengalaman</h2><ul><li>Master Teacher OSN</li><li>Guru SMA IT Al Binaa</li></ul></div>
-		</div>
-		<script>
-			function update() {
-				const n = new Date();
-				document.getElementById('jam-txt').innerText = n.toLocaleTimeString('id-ID', {hour12: false}).replace(/:/g, '.');
-				document.getElementById('masehi-txt').innerText = n.toLocaleDateString('id-ID', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
-				// Hijriah Logic
-				const d = Math.floor((n - new Date('2026-06-19'))/86400000);
-				document.getElementById('hijriah-txt').innerText = (4+d) + " Muharram 1448 H";
-			}
-			setInterval(update, 1000); update();
-		</script>
-	</body>
-	</html>`
-}
-
-func jasaPageHTML() string {
-	return `<html><body style="background:#0F172A; color:white; padding:40px; font-family:sans-serif;">
-		<h1>Alalify Tech 🛠️</h1>
-		<p>Solusi Software, Web & LMS untuk Pendidikan.</p>
-		<a href="/" style="color:#0EA5E9;">← Kembali ke Beranda</a>
 	</body></html>`
 }
 
-func renderArtikel(w http.ResponseWriter, p string) {
-	slug := strings.TrimPrefix(p, "/posts/")
-	data, _ := os.ReadFile(filepath.Join("content", "posts", slug+".md"))
-	fmt.Fprintf(w, "<html><body style='font-family:sans-serif; padding:40px; max-width:700px; margin:auto;'>%s</body></html>", string(data))
+func renderBuku() string {
+	return `<html><body style="font-family:sans-serif; max-width:600px; margin:auto; padding:40px;">
+		<a href="/">← Kembali</a><h1 style="color:#800000;">Matematika Itu Asyik</h1>
+		<iframe src="https://drive.google.com/file/d/17SbICWWxQOCRf_l4xOVrjAU20CBNkY0X/preview" width="100%" height="400px"></iframe>
+	</body></html>`
+}
+
+func renderJasa() string {
+	return `<html><body style="background:#0F172A; color:white; padding:40px; font-family:sans-serif;">
+		<h1>Al Alify Tech 🛠️</h1>
+		<p>Pengembangan Web, LMS, dan Aplikasi POS Kustom.</p>
+		<a href="/" style="color:#0EA5E9;">← Kembali ke Beranda</a>
+	</body></html>`
 }
