@@ -33,6 +33,8 @@ func dashboardHTML() string {
 		h2{color:#800000; font-weight:900; border-left:6px solid #800000; padding-left:15px;}
 		.btn-yt{background:#0EA5E9; color:white; padding:12px 24px; border-radius:8px; text-decoration:none; font-weight:800; display:inline-block; margin:5px;}
 		.btn-nav{background:transparent; color:white; padding:8px 16px; border:1px solid #334155; border-radius:6px; text-decoration:none; font-size:0.9rem; margin:0 5px;}
+		.video-wrapper{position:relative; width:100%; padding-bottom:56.25%; height:0; border-radius:12px; overflow:hidden; background:#000;}
+		.video-wrapper iframe{position:absolute; top:0; left:0; width:100%; height:100%;}
 	</style></head><body>
 		<div class="hero">
 			<h1>Alif Rezky, M.Pd</h1>
@@ -60,8 +62,8 @@ func dashboardHTML() string {
 			</div>
 			<div class="card">
 				<h2>Video Pembelajaran</h2>
-				<div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px;">
-					<iframe style="position:absolute; top:0; left:0; width:100%; height:100%;" src="https://www.youtube.com/embed/_3pqgVhtDBg"></iframe>
+				<div class="video-wrapper">
+					<iframe src="https://www.youtube.com/embed/_3pqgVhtDBg" allowfullscreen></iframe>
 				</div>
 			</div>
 		</div>
