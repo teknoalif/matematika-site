@@ -1,10 +1,11 @@
-package handler
+package main
 
 import (
 	"fmt"
 	"net/http"
 )
 
+// Handler utama yang dipanggil oleh Vercel
 func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -18,7 +19,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	case p == "/jasa/alalify-tech": 
 		fmt.Fprintf(w, renderJasa())
 	default: 
-		http.NotFound(w, r)
+		fmt.Fprintf(w, dashboardHTML())
 	}
 }
 
