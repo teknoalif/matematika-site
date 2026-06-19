@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "buildCommand": "echo 'Build skipped'",
   "rewrites": [
     { "source": "/(.*)", "destination": "/api/index.go" }
   ]
