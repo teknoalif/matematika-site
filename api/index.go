@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
@@ -43,22 +42,16 @@ func dashboardHTML() string {
 			<div class="card">
 				<h2>Riwayat Pengalaman / الخبرات</h2>
 				<ul>
-					<li><b>Math Tutor (Online)</b>, Algonova (Mar 2026-Sekarang / مارس ٢٠٢٦م - الآن)</li>
-					<li><b>Guru Matematika</b>, SMA IT Al Binaa (Sept 2022-Jun 2026 / سبتمبر ٢٠٢٢م - يونيو ٢٠٢٦م)</li>
-					<li><b>Master Teacher</b>, Brain Academy by Ruangguru (Okt-Des 2023 / أكتوبر - ديسمبر ٢٠٢٣م)</li>
-					<li><b>Asisten Dosen</b>, UNM (Okt 2018-Sept 2022 / أكتوبر ٢٠١٨م - سبتمبر ٢٠٢٢م)</li>
+					<li><b>Math Tutor (Online)</b>, Algonova (Mar 2026-Sekarang)</li>
+					<li><b>Guru Matematika</b>, SMA IT Al Binaa (Sept 2022-Jun 2026)</li>
+					<li><b>Master Teacher</b>, Brain Academy by Ruangguru (Okt-Des 2023)</li>
+					<li><b>Asisten Dosen</b>, UNM (Okt 2018-Sept 2022)</li>
 				</ul>
 			</div>
 			<div class="card">
 				<h2>Bahasa & Skill</h2>
-				<p><b>Bahasa:</b> Indonesia, Inggris, Makassar, Bisindo | العربية (مستوى أساسي)</p>
-				<p><b>Teknologi:</b> Python, JS, CSS, PHP, ActionScript 2.0</p>
-			</div>
-			<div class="card">
-				<h2>Video Pembelajaran</h2>
-				<div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
-					<iframe style="position:absolute; top:0; left:0; width:100%; height:100%; border-radius:12px;" src="https://www.youtube.com/embed/_3pqgVhtDBg"></iframe>
-				</div>
+				<p><b>Bahasa:</b> Indonesia, Inggris, Makassar, Bisindo | العربية</p>
+				<p><b>Teknologi:</b> Python, JavaScript, CSS, PHP, ActionScript 2.0</p>
 			</div>
 		</div>
 	</body></html>`
@@ -74,7 +67,7 @@ func renderBuku() string {
 func renderJasa() string {
 	return `<html><body style="background:#0F172A; color:white; padding:40px; font-family:sans-serif;">
 		<h1>Al Alify Tech 🛠️</h1>
-		<p>Pengembangan Web, LMS, dan Aplikasi POS Kustom.</p>
+		<p>Solusi Software, Web & LMS untuk Pendidikan.</p>
 		<a href="/" style="color:#0EA5E9;">← Kembali ke Beranda</a>
 	</body></html>`
 }
