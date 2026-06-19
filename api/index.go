@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// Handler utama yang dipanggil oleh Vercel
+// Handler dipanggil oleh Vercel untuk menangani request
 func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
