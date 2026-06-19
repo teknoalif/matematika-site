@@ -3,72 +3,107 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 func Handler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	p := r.URL.Path
 
-	switch {
-	case p == "/" || p == "": fmt.Fprintf(w, renderDashboard())
-	case p == "/buku": fmt.Fprintf(w, renderBuku())
-	case p == "/jasa/alalify-tech": fmt.Fprintf(w, renderJasa())
-	default: http.NotFound(w, r)
+	// --- ROUTING HALAMAN UTAMA (DASHBOARD) ---
+	if p == "/" || p == "" {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		fmt.Fprintf(w, dashboardHTML())
+		return
 	}
+
+	// --- ROUTING JASA ---
+	if p == "/jasa/alalify-tech" {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		fmt.Fprintf(w, jasaPageHTML())
+		return
+	}
+
+	// --- ROUTING ARTIKEL MARKDOWN ---
+	if strings.HasPrefix(p, "/posts/") {
+		renderArtikel(w, p)
+		return
+	}
+
+	http.NotFound(w, r)
 }
 
-func renderDashboard() string {
-	return `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Alif Rezky, M.Pd</title>
-	<style>
-		:root{--maroon:#800000; --blue:#0EA5E9; --bg:#F8FAFC;}
-		body{font-family:'Inter', system-ui, sans-serif; background:var(--bg); color:#334155; margin:0;}
-		.hero{padding:80px 20px; text-align:center; background:white; border-bottom:1px solid #E2E8F0;}
-		h1{color:var(--maroon); font-size:3rem; font-weight:950; margin:0;}
-		.grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(350px, 1fr)); gap:30px; padding:40px; max-width:1100px; margin:auto;}
-		.card{background:white; padding:30px; border-radius:24px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.05); border:1px solid #E2E8F0;}
-		.tag{display:inline-block; background:#EFF6FF; color:var(--blue); padding:4px 12px; border-radius:6px; font-weight:700; font-size:0.8rem; margin:4px;}
-		.btn{padding:12px 24px; border-radius:12px; text-decoration:none; font-weight:800; display:inline-block; margin-top:20px;}
-	</style></head><body>
+func dashboardHTML() string {
+	return `
+	<!DOCTYPE html>
+	<html lang="id">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Alif Rezky, M.Pd - Portofolio & Buku</title>
+		<style>
+			* { box-sizing: border-box; }
+			body { font-family: 'Segoe UI', system-ui, sans-serif; background-color: #F8FAFC; color: #1E293B; margin: 0; padding-bottom: 60px; }
+			.widget-bar { background: white; padding: 14px 40px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid #E2E8F0; }
+			.hero { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); padding: 60px 40px; color: white; display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 20px auto; border-radius: 24px; }
+			.hero h1 { font-weight: 950; font-size: 3.2rem; margin: 0; letter-spacing: -2px; color: #0EA5E9; }
+			.hero-btn { display: inline-flex; align-items: center; color: white; text-decoration: none; font-size: 0.85rem; font-weight: 800; padding: 14px 28px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.15); transition: 0.2s; }
+			.container { max-width: 1400px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+			.card { background: white; padding: 35px; border-radius: 24px; border: 1px solid #E2E8F0; }
+		</style>
+	</head>
+	<body>
+		<div class="widget-bar">
+			<div>📅 Masehi: <span id="masehi-txt"></span></div>
+			<div>🌙 Hijriah: <span id="hijriah-txt"></span></div>
+			<div>🕒 Jam: <span id="jam-txt"></span></div>
+		</div>
 		<div class="hero">
-			<h1>Alif Rezky, M.Pd</h1>
-			<p style="font-size:1.2rem; font-weight:600;">Mathematics Educator & Fullstack Developer</p>
-			<a href="/buku" class="btn" style="background:var(--maroon); color:white;">Lihat Buku Cetak 📚</a>
-		</div>
-		<div class="grid">
-			<div class="card">
-				<h2>Tentang Saya</h2>
-				<p>Magister Pendidikan Matematika UNM dengan passion tinggi dalam rekayasa perangkat lunak. Berpengalaman dalam membimbing santri OSN/UTBK dan membangun ekosistem digital (LMS) berbasis web modern.</p>
-				<div><span class="tag">GNU/Linux</span><span class="tag">Golang</span><span class="tag">React/Next.js</span><span class="tag">Python</span></div>
-			</div>
-			<div class="card">
-				<h2>Pengalaman Utama</h2>
-				<p><strong>Master Teacher OSN</strong> @ Edumatrix (2026-Sekarang)<br>
-				<strong>Online Math Tutor</strong> @ Algonova (2026-Sekarang)<br>
-				<strong>Guru Matematika</strong> @ SMA IT Al Binaa (2022-2026)</p>
-			</div>
-			<div class="card" style="grid-column: 1 / -1;">
-				<h2>Layanan Al Alify Tech</h2>
-				<p>Solusi digital kustom untuk lembaga pendidikan, toko (POS), dan pengembangan aplikasi profesional.</p>
-				<a href="/jasa/alalify-tech" class="btn" style="background:var(--blue); color:white;">Jelajahi Solusi Teknologi 🛠️</a>
+			<div><h1>Alif Rezky, M.Pd</h1><p>Mathematics Educator | Tech Developer | Author</p></div>
+			<div>
+				<a href="https://youtube.com/@kakalifgurumatematika" target="_blank" class="hero-btn">YouTube Channel</a>
+				<a href="/jasa/alalify-tech" class="hero-btn" style="background:#0EA5E9;">Alalify Tech 🛠️</a>
 			</div>
 		</div>
+		<div class="container">
+			<div class="card"><h2>Profil & Keahlian</h2><p>Pendidik matematika UNM, expert GNU/Linux & Web Dev.</p></div>
+			<div class="card"><h2>Pengalaman</h2><ul><li>Master Teacher OSN</li><li>Guru SMA IT Al Binaa</li></ul></div>
+		</div>
+		<script>
+			function update() {
+				const n = new Date();
+				document.getElementById('jam-txt').innerText = n.toLocaleTimeString('id-ID', {hour12: false}).replace(/:/g, '.');
+				document.getElementById('masehi-txt').innerText = n.toLocaleDateString('id-ID', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'});
+				// Hijriah Logic
+				const d = Math.floor((n - new Date('2026-06-19'))/86400000);
+				document.getElementById('hijriah-txt').innerText = (4+d) + " Muharram 1448 H";
+			}
+			setInterval(update, 1000); update();
+		</script>
+	</body>
+	</html>`
+}
+
+func jasaPageHTML() string {
+	return `<html><body style="background:#0F172A; color:white; padding:40px; font-family:sans-serif;">
+		<h1>Alalify Tech 🛠️</h1>
+		<p>Solusi Software, Web & LMS untuk Pendidikan.</p>
+		<a href="/" style="color:#0EA5E9;">← Kembali ke Beranda</a>
 	</body></html>`
 }
 
-func renderBuku() string {
-	return `<!DOCTYPE html><html lang="id"><body style="font-family:sans-serif; max-width:700px; margin:auto; padding:40px;">
-		<a href="/">← Kembali</a><h1 style="color:#800000;">Matematika Itu Asyik</h1>
-		<p>Buku inovatif yang mengubah cara pandang santri terhadap aljabar dan geometri.</p>
-		<iframe src="https://drive.google.com/file/d/17SbICWWxQOCRf_l4xOVrjAU20CBNkY0X/preview" width="100%" height="400px"></iframe>
-		<a href="https://wa.me/6285256162879?text=Bismillah+pesan+buku" style="display:block; background:#25D366; padding:20px; color:white; text-align:center; border-radius:12px; font-weight:900; text-decoration:none;">PESAN VIA WHATSAPP</a>
-	</body></html>`
-}
-
-func renderJasa() string {
-	return `<html><body style="font-family:sans-serif; padding:40px; background:#0F172A; color:white;">
-		<h1>Al Alify Tech 🛠️</h1>
-		<p>Kami melayani pembuatan sistem informasi sekolah (LMS), aplikasi kasir (POS), hingga website perusahaan.</p>
-		<a href="/" style="color:#38BDF8;">← Kembali ke Portofolio</a>
-	</body></html>`
+func renderArtikel(w http.ResponseWriter, p string) {
+	slug := strings.TrimPrefix(p, "/posts/")
+	data, _ := os.ReadFile(filepath.Join("content", "posts", slug+".md"))
+	fmt.Fprintf(w, "<html><body style='font-family:sans-serif; padding:40px; max-width:700px; margin:auto;'>%s</body></html>", string(data))
 }
