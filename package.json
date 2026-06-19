@@ -2,6 +2,11 @@
   "name": "matematika-site",
   "version": "1.0.0",
   "scripts": {
-    "build": "echo 'Build skipped'"
+    "build": "echo 'Build skipped'",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^4.102.0"
   }
-} 
+}
