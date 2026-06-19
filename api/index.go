@@ -1,22 +1,20 @@
-package main
+package handler
 
 import (
 	"fmt"
 	"net/http"
 )
 
-// Handler dipanggil oleh Vercel untuk menangani request
+// Handler ini adalah entrypoint standar Vercel untuk Go
 func Handler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	
 	p := r.URL.Path
-	switch {
-	case p == "/" || p == "" || p == "/api": 
-		fmt.Fprintf(w, dashboardHTML())
-	case p == "/buku": 
+	switch p {
+	case "/buku": 
 		fmt.Fprintf(w, renderBuku())
-	case p == "/jasa/alalify-tech": 
+	case "/jasa/alalify-tech": 
 		fmt.Fprintf(w, renderJasa())
 	default: 
 		fmt.Fprintf(w, dashboardHTML())
